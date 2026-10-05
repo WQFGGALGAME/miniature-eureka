@@ -1,0 +1,165 @@
+/* ============================================================
+   MERIDIAN · 02 基础 (Reset / Typography / A11y)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+* { margin: 0; padding: 0; }
+
+/* 保证 hidden 属性不被作者 display 覆盖 */
+[hidden] { display: none !important; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  scrollbar-gutter: stable;
+  overflow-x: clip;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--fs-base);
+  line-height: var(--lh-base);
+  color: var(--c-text);
+  background-color: var(--c-bg-base);
+  color-scheme: dark;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overflow-x: clip;
+}
+
+/* 标题 */
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  line-height: var(--lh-tight);
+  font-weight: var(--w-semi);
+  color: var(--c-text-strong);
+  text-wrap: balance;
+}
+
+p { text-wrap: pretty; }
+
+/* 列表 */
+ul, ol { list-style: none; }
+
+/* 媒体 */
+img, picture, video, canvas, svg { display: block; max-width: 100%; }
+img { height: auto; }
+
+/* 表单控件继承字体 */
+input, button, textarea, select {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+}
+
+button { background: none; border: none; cursor: pointer; }
+input, textarea { background: none; border: none; }
+input:focus, textarea:focus, button:focus { outline: none; }
+
+textarea { resize: vertical; }
+
+/* 链接 */
+a { color: var(--c-teal); text-decoration: none; }
+a:hover { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- 焦点可见（键盘用户） ---------- */
+:focus-visible {
+  outline: 2px solid var(--c-amber-strong);
+  outline-offset: 2px;
+  border-radius: var(--r-2xs);
+}
+.icon-btn:focus-visible,
+.filter-tab:focus-visible { outline-offset: 3px; }
+
+/* ---------- 屏幕阅读器专用 ---------- */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap; border: 0;
+}
+
+/* ---------- 跳过链接 ---------- */
+.skip-link {
+  position: fixed;
+  top: var(--sp-sm);
+  left: var(--sp-sm);
+  z-index: var(--z-modal);
+  padding: var(--sp-sm) var(--sp-lg);
+  background: var(--c-amber);
+  color: oklch(0.2 0.05 70);
+  border-radius: var(--r-sm);
+  font-weight: var(--w-semi);
+  transform: translateY(-160%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+.skip-link:focus-visible { transform: translateY(0); color: oklch(0.2 0.05 70); }
+
+/* ---------- 选区 ---------- */
+::selection {
+  background: oklch(0.78 0.13 70 / 0.32);
+  color: var(--c-text-strong);
+}
+
+/* ---------- 滚动条 ---------- */
+* { scrollbar-width: thin; scrollbar-color: oklch(1 0 0 / 0.18) transparent; }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: oklch(1 0 0 / 0.14);
+  border-radius: var(--r-full);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: oklch(1 0 0 / 0.26); background-clip: content-box; }
+
+/* ---------- 原生 dialog 基础重置 ---------- */
+dialog {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  max-inline-size: min(92vw, 640px);
+}
+dialog::backdrop { background: oklch(0.06 0.02 258 / 0.62); backdrop-filter: blur(3px); }
+
+/* ---------- kbd 键位 ---------- */
+kbd {
+  font-family: var(--font-mono);
+  font-size: 0.78em;
+  font-weight: var(--w-med);
+  line-height: 1;
+  padding: 0.28em 0.46em;
+  border-radius: var(--r-2xs);
+  background: var(--c-surface-3);
+  border: 1px solid var(--c-hairline-strong);
+  border-bottom-width: 2px;
+  color: var(--c-text-soft);
+  white-space: nowrap;
+}
+
+/* 日期选择器配色 */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.8) sepia(0.5) saturate(3) hue-rotate(350deg);
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+/* 搜索框清除按钮 */
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 15px; height: 15px;
+  background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center/contain no-repeat;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='none' stroke='black' stroke-width='2.4' stroke-linecap='round' d='M6 6l12 12M18 6L6 18'/%3E%3C/svg%3E") center/contain no-repeat;
+  color: var(--c-text-muted);
+}
