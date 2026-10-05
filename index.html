@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="color-scheme" content="dark light" />
+  <meta name="description" content="MERIDIAN 任务子午台 —— 把每一件事，安放在它的星位。极简而精密的待办工作台。" />
+  <title>MERIDIAN · 任务子午台</title>
+
+  <!-- Favicon：子午线准星 -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b1020'/%3E%3Ccircle cx='16' cy='16' r='9.5' fill='none' stroke='%23e8a34d' stroke-width='1.4'/%3E%3Cline x1='16' y1='2.5' x2='16' y2='29.5' stroke='%23e8a34d' stroke-width='1.3'/%3E%3Cline x1='2.5' y1='16' x2='29.5' y2='16' stroke='%23e8a34d' stroke-width='1.3'/%3E%3Ccircle cx='16' cy='16' r='2.6' fill='%23e8a34d'/%3E%3C/svg%3E" />
+
+
+  <!-- 字体（自托管镜像，带完整 fallback） -->
+  <link rel="preconnect" href="https://miaoda.feishu.cn" crossorigin />
+  <link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+
+  <!-- 样式：令牌 → 基础 → 布局 → 组件 → 浮层 → 主题 → 动效 -->
+  <link rel="stylesheet" href="styles/01-tokens.css" />
+  <link rel="stylesheet" href="styles/02-base.css" />
+  <link rel="stylesheet" href="styles/03-layout.css" />
+  <link rel="stylesheet" href="styles/04-components.css" />
+  <link rel="stylesheet" href="styles/05-overlays.css" />
+  <link rel="stylesheet" href="styles/06-themes.css" />
+  <link rel="stylesheet" href="styles/07-animations.css" />
+</head>
+
+<body>
+  <!-- ============ 背景层：星图 / 等高线 / 噪点 / 暗角 ============ -->
+  <div class="backdrop" aria-hidden="true">
+    <canvas id="starfield" class="backdrop__canvas"></canvas>
+    <div class="backdrop__contours"></div>
+    <div class="backdrop__grid"></div>
+    <div class="backdrop__grain"></div>
+    <div class="backdrop__vignette"></div>
+  </div>
+
+  <a class="skip-link" href="#quick-input">跳到任务输入</a>
+
+  <div class="app-shell" id="app-shell">
+
+    <!-- ============ 顶栏 ============ -->
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" width="30" height="30">
+            <circle cx="16" cy="16" r="12" fill="none" stroke="currentColor" stroke-width="1.4" />
+            <line x1="16" y1="2" x2="16" y2="30" stroke="currentColor" stroke-width="1.3" />
+            <line x1="2" y1="16" x2="30" y2="16" stroke="currentColor" stroke-width="1.3" />
+            <circle cx="16" cy="16" r="3" fill="currentColor" />
+          </svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">MERIDIAN</span>
+          <span class="brand__sub">任务子午台</span>
+        </span>
+      </div>
+
+      <div class="topbar__clock">
+        <span id="clock-time" class="clock__time">--:--</span>
+        <span id="clock-date" class="clock__date">载入中</span>
+      </div>
+
+      <div class="topbar__actions">
+        <button id="btn-sound" class="icon-btn" type="button"
+                role="switch" aria-checked="false" aria-label="切换操作音效" title="操作音效 (S)">
+          <svg class="ic ic--on" viewBox="0 0 24 24" width="19" height="19"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H3v6h3l5 4V5z"/><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" d="M15.5 8.5a5 5 0 0 1 0 7M18.5 6a9 9 0 0 1 0 12"/></svg>
+          <svg class="ic ic--off" viewBox="0 0 24 24" width="19" height="19"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M11 5 6 9H3v6h3l5 4V5z"/><line x1="16" y1="9" x2="21" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><line x1="21" y1="9" x2="16" y2="15" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </button>
+        <button id="btn-theme" class="icon-btn" type="button" aria-label="切换明暗主题" title="切换主题 (T)">
+          <svg class="ic ic--moon" viewBox="0 0 24 24" width="19" height="19"><path fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" d="M20 13.5A8 8 0 1 1 10.5 4 6.5 6.5 0 0 0 20 13.5z"/></svg>
+          <svg class="ic ic--sun" viewBox="0 0 24 24" width="19" height="19"><circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.7"/><g fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="4.5"/><line x1="12" y1="19.5" x2="12" y2="22"/><line x1="2" y1="12" x2="4.5" y2="12"/><line x1="19.5" y1="12" x2="22" y2="12"/><line x1="4.9" y1="4.9" x2="6.7" y2="6.7"/><line x1="17.3" y1="17.3" x2="19.1" y2="19.1"/><line x1="19.1" y1="4.9" x2="17.3" y2="6.7"/><line x1="6.7" y1="17.3" x2="4.9" y2="19.1"/></g></svg>
+        </button>
+        <button id="btn-help" class="icon-btn" type="button" aria-label="查看键盘快捷键" title="快捷键帮助 (?)">
+          <svg viewBox="0 0 24 24" width="19" height="19"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/><path fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" d="M9.6 9.2a2.4 2.4 0 1 1 3.3 2.2c-.7.3-1 .8-1 1.6"/><circle cx="12" cy="16.4" r="0.6" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============ 工作区 ============ -->
+    <main class="workspace">
+
+      <!-- 主面板：输入 + 工具 + 列表 -->
+      <section class="panel task-panel" aria-labelledby="task-panel-title">
+        <h1 id="task-panel-title" class="panel__title">
+          <span class="panel__title-main">星历表</span>
+          <span class="panel__title-note">把每一件事，安放在它的星位</span>
+        </h1>
+
+        <!-- 快速添加 -->
+        <form id="quick-add" class="quick-add" autocomplete="off">
+          <button type="button" id="qa-priority" class="qa-priority" aria-label="选择优先级，当前为中" title="优先级">
+            <svg viewBox="0 0 24 24" width="18" height="18"><path fill="currentColor" d="M5 3h2.2v9.4H5zm0 10.6h2.2L6.1 21 5 20.4zM8.4 3v2.1l6.2 1.8V3zm0 10.6h8.3c1.4 0 2.3-1 2.3-2.3 0-1-.6-1.7-1.5-2L8.4 6.9z"/></svg>
+            <span id="qa-priority-label" class="qa-priority__label">中</span>
+          </button>
+          <input type="date" id="qa-due" class="qa-date" aria-label="截止日期（可选）" />
+          <input type="text" id="quick-input" class="quick-input" placeholder="记一件要做的事，回车安放…"
+                 aria-label="新任务内容" maxlength="240" />
+          <button type="submit" id="qa-submit" class="btn btn--primary qa-submit">
+            <svg viewBox="0 0 24 24" width="17" height="17"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+            <span>安放</span>
+          </button>
+        </form>
+
+        <!-- 工具栏 -->
+        <div class="toolbar">
+          <div class="filter-tabs" role="tablist" aria-label="任务筛选">
+            <button class="filter-tab is-active" role="tab" data-filter="all" aria-selected="true">全部 <span class="tab__count" id="count-all">0</span></button>
+            <button class="filter-tab" role="tab" data-filter="active" aria-selected="false">进行中 <span class="tab__count" id="count-active">0</span></button>
+            <button class="filter-tab" role="tab" data-filter="completed" aria-selected="false">已完成 <span class="tab__count" id="count-completed">0</span></button>
+          </div>
+
+          <div class="toolbar__right">
+            <label class="search-box">
+              <svg viewBox="0 0 24 24" width="16" height="16"><circle cx="11" cy="11" r="7" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="16.2" y1="16.2" x2="21" y2="21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+              <input type="search" id="search-input" placeholder="搜索星位…" aria-label="搜索任务" />
+            </label>
+            <button id="btn-more" class="btn btn--ghost" type="button" aria-haspopup="menu" aria-expanded="false">
+              <svg viewBox="0 0 24 24" width="17" height="17"><circle cx="5" cy="12" r="1.7" fill="currentColor"/><circle cx="12" cy="12" r="1.7" fill="currentColor"/><circle cx="19" cy="12" r="1.7" fill="currentColor"/></svg>
+              <span>操作</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 任务列表（JS 渲染） -->
+        <ul id="task-list" class="task-list" role="list" aria-label="任务列表" aria-live="off"></ul>
+
+        <!-- 空状态 -->
+        <div id="empty-state" class="empty-state" hidden>
+          <svg viewBox="0 0 80 80" width="72" height="72" aria-hidden="true">
+            <circle cx="40" cy="40" r="30" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="3 5"/>
+            <circle cx="40" cy="40" r="3.2" fill="currentColor"/>
+            <line x1="40" y1="8" x2="40" y2="20" stroke="currentColor" stroke-width="1"/>
+            <line x1="40" y1="60" x2="40" y2="72" stroke="currentColor" stroke-width="1"/>
+            <line x1="8" y1="40" x2="20" y2="40" stroke="currentColor" stroke-width="1"/>
+            <line x1="60" y1="40" x2="72" y2="40" stroke="currentColor" stroke-width="1"/>
+          </svg>
+          <p id="empty-title" class="empty__title">这片天区还没有星位</p>
+          <p id="empty-note" class="empty__note">在上方写下第一件事，按回车安放。</p>
+        </div>
+      </section>
+
+      <!-- 侧面板：Bento 仪表 -->
+      <aside class="panel side-panel" aria-label="观测仪表">
+        <h2 class="panel__title panel__title--side">
+          <span class="panel__title-main">观测台</span>
+        </h2>
+
+        <div class="bento">
+          <div class="bento__cell bento__cell--ring">
+            <div class="ring" id="progress-ring" style="--p:0">
+              <svg viewBox="0 0 120 120" width="118" height="118" role="img" aria-label="完成进度环">
+                <circle class="ring__track" cx="60" cy="60" r="50" />
+                <circle class="ring__bar" id="ring-bar" cx="60" cy="60" r="50" />
+              </svg>
+              <div class="ring__label">
+                <span id="ring-percent" class="ring__percent">0%</span>
+                <span class="ring__cap">完成率</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="bento__cell stat">
+            <span class="stat__label">待办星位</span>
+            <span class="stat__value" id="stat-remaining">0</span>
+            <span class="stat__foot">仍在轨道上</span>
+          </div>
+
+          <div class="bento__cell stat">
+            <span class="stat__label">今日完成</span>
+            <span class="stat__value" id="stat-today">0</span>
+            <span class="stat__foot" id="stat-today-foot">尚未点亮</span>
+          </div>
+
+          <div class="bento__cell stat">
+            <span class="stat__label">连续记录</span>
+            <span class="stat__value"><span id="stat-streak">0</span><small class="stat__unit">天</small></span>
+            <span class="stat__foot" id="stat-streak-foot">从今天开始</span>
+          </div>
+
+          <div class="bento__cell stat stat--wide">
+            <span class="stat__label">总计已安放 / 已点亮</span>
+            <span class="stat__value"><span id="stat-total">0</span><small class="stat__dim"> / </small><span id="stat-done">0</span></span>
+            <span class="stat__foot" id="stat-rate-foot">尚无记录</span>
+          </div>
+        </div>
+
+        <!-- 标签云（JS） -->
+        <div class="tag-panel">
+          <span class="tag-panel__head">星区（标签）</span>
+          <div id="tag-cloud" class="tag-cloud"></div>
+        </div>
+
+        <p class="side__hint">
+          <kbd>Ctrl</kbd><kbd>K</kbd> 唤起命令面板 · <kbd>?</kbd> 查看全部快捷键
+        </p>
+      </aside>
+    </main>
+
+    <!-- ============ 状态栏 ============ -->
+    <footer class="statusbar">
+      <span id="status-text" class="statusbar__text">正在校准星图…</span>
+      <span class="statusbar__right">
+        <span class="statusbar__keys"><kbd>N</kbd> 新建 <kbd>/</kbd> 搜索 <kbd>G</kbd><span class="key-sep">→</span><kbd>A</kbd>/<kbd>D</kbd> 筛选</span>
+      </span>
+    </footer>
+  </div>
+
+  <!-- ============ 命令面板 ============ -->
+  <dialog id="command-palette" class="palette" aria-label="命令面板">
+    <div class="palette__search">
+      <svg viewBox="0 0 24 24" width="18" height="18"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" d="m5 12 5 5L20 7"/></svg>
+      <input type="text" id="palette-input" placeholder="输入命令或搜索…" aria-label="命令搜索" autocomplete="off" />
+      <kbd class="palette__esc">ESC</kbd>
+    </div>
+    <ul id="palette-list" class="palette__list" role="listbox" aria-label="命令列表"></ul>
+    <div class="palette__foot">
+      <span><kbd>↑</kbd><kbd>↓</kbd> 选择</span>
+      <span><kbd>↵</kbd> 执行</span>
+    </div>
+  </dialog>
+
+  <!-- ============ 确认对话框 ============ -->
+  <dialog id="confirm-dialog" class="modal" aria-labelledby="confirm-title">
+    <h3 id="confirm-title" class="modal__title">确认操作</h3>
+    <p id="confirm-message" class="modal__msg"></p>
+    <div class="modal__actions">
+      <button id="confirm-cancel" class="btn btn--ghost" type="button">取消</button>
+      <button id="confirm-ok" class="btn btn--danger" type="button">确认</button>
+    </div>
+  </dialog>
+
+  <!-- ============ 快捷键帮助 ============ -->
+  <dialog id="shortcuts-dialog" class="modal modal--wide" aria-labelledby="shortcuts-title">
+    <h3 id="shortcuts-title" class="modal__title">键盘星图</h3>
+    <div class="shortcut-grid" id="shortcut-grid"></div>
+    <div class="modal__actions">
+      <button id="shortcuts-close" class="btn btn--primary" type="button">知道了</button>
+    </div>
+  </dialog>
+
+  <!-- Toast 与屏幕阅读器播报 -->
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="false"></div>
+  <div id="sr-announcer" class="sr-only" aria-live="polite"></div>
+
+  <!-- ============ 脚本（IIFE 挂全局 App，按依赖顺序加载，file:// 可直接运行） ============ -->
+  <script src="scripts/utils.js"></script>
+  <script src="scripts/storage.js"></script>
+  <script src="scripts/store.js"></script>
+  <script src="scripts/audio.js"></script>
+  <script src="scripts/starfield.js"></script>
+  <script src="scripts/keyboard.js"></script>
+  <script src="scripts/dnd.js"></script>
+  <script src="scripts/commandpalette.js"></script>
+  <script src="scripts/components/toast.js"></script>
+  <script src="scripts/components/modal.js"></script>
+  <script src="scripts/components/taskitem.js"></script>
+  <script src="scripts/components/toolbar.js"></script>
+  <script src="scripts/components/stats.js"></script>
+  <script src="scripts/app.js"></script>
+  <script src="scripts/main.js"></script>
+</body>
+</html>
