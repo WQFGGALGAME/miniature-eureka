@@ -1,0 +1,158 @@
+/* ============================================================
+   MERIDIAN · 01 设计令牌 (Design Tokens)
+   色彩以 OKLCH 定义；暗色为默认主题，亮色在 06-themes 覆盖。
+   ============================================================ */
+
+:root {
+  /* ---------- 色彩：深空基底（午夜蓝黑，非纯黑、非紫） ---------- */
+  --c-bg-deep:    oklch(0.135 0.028 258);
+  --c-bg-base:    oklch(0.165 0.032 257);
+  --c-bg-raise:   oklch(0.195 0.036 256);
+
+  --c-surface-1:  oklch(0.205 0.038 256);
+  --c-surface-2:  oklch(0.242 0.042 255);
+  --c-surface-3:  oklch(0.282 0.046 254);
+  --c-surface-inset: oklch(0.15 0.03 257);
+
+  /* 发丝描边 */
+  --c-hairline:   oklch(1 0 0 / 0.075);
+  --c-hairline-strong: oklch(1 0 0 / 0.14);
+  --c-hairline-amber: oklch(0.78 0.13 70 / 0.35);
+
+  /* ---------- 色彩：文字 ---------- */
+  --c-text-strong: oklch(0.965 0.008 250);
+  --c-text:        oklch(0.885 0.014 250);
+  --c-text-soft:   oklch(0.745 0.02 250);
+  --c-text-muted:  oklch(0.595 0.022 250);
+  --c-text-faint:  oklch(0.48 0.02 252);
+
+  /* ---------- 色彩：强调（琥珀铜 / 青蓝） ---------- */
+  --c-amber:        oklch(0.775 0.133 68);
+  --c-amber-strong: oklch(0.86 0.14 74);
+  --c-amber-deep:   oklch(0.6 0.118 58);
+  --c-amber-soft:   oklch(0.775 0.133 68 / 0.14);
+
+  --c-teal:        oklch(0.785 0.105 208);
+  --c-teal-strong: oklch(0.85 0.11 206);
+  --c-teal-deep:   oklch(0.6 0.09 210);
+  --c-teal-soft:   oklch(0.785 0.105 208 / 0.13);
+
+  /* ---------- 色彩：优先级 / 状态 ---------- */
+  --c-prio-high:   oklch(0.675 0.175 24);
+  --c-prio-high-soft: oklch(0.675 0.175 24 / 0.15);
+  --c-prio-mid:    var(--c-amber);
+  --c-prio-mid-soft: var(--c-amber-soft);
+  --c-prio-low:    oklch(0.74 0.095 200);
+  --c-prio-low-soft: oklch(0.74 0.095 200 / 0.14);
+
+  --c-danger:      oklch(0.655 0.195 16);
+  --c-danger-strong: oklch(0.72 0.2 18);
+  --c-danger-soft: oklch(0.655 0.195 16 / 0.14);
+  --c-success:     var(--c-teal);
+
+  /* ---------- 字体族（含完整 fallback） ---------- */
+  --font-display: "Space Grotesk", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-cn-serif: "Noto Serif SC", "Songti SC", "SimSun", serif;
+  --font-body: "Noto Sans SC", "Space Grotesk", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", "Consolas", "Noto Sans SC", monospace;
+
+  /* ---------- 字号（流式） ---------- */
+  --fs-hero: clamp(2.1rem, 1.4rem + 3vw, 3.1rem);
+  --fs-h1:   clamp(1.45rem, 1.1rem + 1.4vw, 1.95rem);
+  --fs-h2:   1.12rem;
+  --fs-lg:   1.02rem;
+  --fs-base: 0.9375rem;   /* 15px */
+  --fs-sm:   0.831rem;    /* ~13.3 */
+  --fs-xs:   0.75rem;     /* 12 */
+  --fs-2xs:  0.6875rem;
+
+  /* 字重 */
+  --w-light: 300;
+  --w-reg: 400;
+  --w-med: 500;
+  --w-semi: 600;
+  --w-bold: 700;
+  --w-black: 900;
+
+  /* 行高 / 字距 */
+  --lh-tight: 1.2;
+  --lh-snug: 1.42;
+  --lh-base: 1.62;
+  --ls-wide: 0.16em;
+  --ls-narrow: -0.015em;
+
+  /* ---------- 间距（4px 基准） ---------- */
+  --sp-2xs: 0.125rem;
+  --sp-xs:  0.25rem;
+  --sp-sm:  0.5rem;
+  --sp-md:  0.75rem;
+  --sp-base: 1rem;
+  --sp-lg:  1.5rem;
+  --sp-xl:  2rem;
+  --sp-2xl: 3rem;
+  --sp-3xl: 4.5rem;
+
+  /* ---------- 圆角（精密仪器：小圆角为主） ---------- */
+  --r-2xs: 4px;
+  --r-xs:  6px;
+  --r-sm:  9px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  22px;
+  --r-full: 999px;
+
+  /* 边框 */
+  --bw-hair: 1px;
+  --bw-thick: 1.6px;
+
+  /* ---------- 阴影 / 辉光（深色：边缘光而非灰投影） ---------- */
+  --sh-panel:
+    0 1px 0 0 oklch(1 0 0 / 0.05) inset,
+    0 18px 40px -22px oklch(0 0 0 / 0.85),
+    0 0 0 1px oklch(1 0 0 / 0.035);
+  --sh-pop:
+    0 1px 0 0 oklch(1 0 0 / 0.07) inset,
+    0 30px 70px -20px oklch(0 0 0 / 0.9),
+    0 8px 24px -12px oklch(0 0 0 / 0.7);
+  --sh-inset: inset 0 2px 6px oklch(0 0 0 / 0.45);
+  --glow-amber: 0 0 0 1px oklch(0.78 0.13 70 / 0.25), 0 0 24px -4px oklch(0.78 0.13 70 / 0.45);
+  --glow-teal:  0 0 22px -6px oklch(0.78 0.1 208 / 0.5);
+
+  /* ---------- 动效 ---------- */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.34, 1.45, 0.5, 1);
+  --ease-snap: cubic-bezier(0.18, 0.9, 0.28, 1);
+
+  --dur-2fast: 0.12s;
+  --dur-fast: 0.18s;
+  --dur-base: 0.28s;
+  --dur-slow: 0.46s;
+  --dur-2slow: 0.62s;
+
+  /* ---------- 层级 ---------- */
+  --z-backdrop: 0;
+  --z-shell: 1;
+  --z-sticky: 50;
+  --z-dropdown: 100;
+  --z-popover: 800;
+  --z-toast: 900;
+  --z-modal: 1000;
+
+  /* ---------- 布局尺寸 ---------- */
+  --shell-max: 1264px;
+  --shell-pad: clamp(1rem, 2.5vw, 2rem);
+  --sidebar-w: 332px;
+  --topbar-h: 68px;
+  --statusbar-h: 38px;
+
+  /* 组件内尺寸 */
+  --task-min-h: 58px;
+  --control-h: 42px;
+}
+
+/* 减少动态：全局令牌也提供给 JS 读取 */
+:root { --motion-allowed: 1; }
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-allowed: 0; }
+}
